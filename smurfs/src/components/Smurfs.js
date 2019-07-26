@@ -1,23 +1,29 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import React from 'react'
 import Smurf from './Smurf'
+import {connect} from 'react-redux'
+import {fetchSmurfs} from '../actions'
 
-const Smurfs = () => {
-    const [smurfs, setSmurfs] = useState([])
+const Smurfs = (props) => {
 
-    useEffect(
-        () => { 
-        axios
-            .get(`http://localhost:3333/smurfs`)
-            .then(res => {setSmurfs(res.data)})
-            .catch(err => console.log('Whoops, we smurfed up!'))
-    }, [])
+    const getSmurfs = (e) => {
+        e.preventDefault();
+        props.fetchSmurfs();
+    }
 
     return (
         <div>
-            {smurfs.map(smurf => {return <Smurf smurf={smurf} />})}
+            {props.smurfs.map(smurf => (
+                <Smurf smurf={smurf} />
+            ))}
+            <button onClick={getSmurfs}>Fetch Smurfs!</button>
         </div>
     )
 }
 
-export default Smurfs;
+const mapStateToProps = state => {
+    return {
+        smurfs: state.smurfs
+    }
+}
+
+export default connect(mapStateToProps, { fetchSmurfs })(Smurfs)
